@@ -1,0 +1,54 @@
+---
+title: "電信公司（Telecom)的客戶分群"
+author: "許sir"
+---
+
+### **資料說明**
+#### 1.This course was introduce "Cluster""
+#### 2.data set has 1477 records 16 fields
+
+### **[Setting libraries and Input Data]**
+```{r message=FALSE, warning=FALSE, results='hide'}
+setwd("/home/m600/Working Area/Rdata Practice/Customer Course/churn")
+
+churnall=read.table("./churn.txt",header=T,sep=",")
+```
+
+### **[Part 1].Data-ETL**
+
+#### **1-1.Data Distribution**
+```{r message=FALSE, warning=FALSE}
+head(churnall)
+
+churnall=na.exclude(churnall) # 
+churn=churnall[,c(2:4)]
+head(churn)
+```
+
+### **[Part 2].Cluster analysis **
+
+#### **2-1.K-mean**
+```{r message=FALSE, warning=FALSE}
+churn.result=kmeans(churn,5)
+table(churn.result$cluster)
+```
+
+#### **2-2.Table and Figure display*
+```{r message=FALSE, warning=FALSE}
+pie(table(churn.result$cluster))
+table(churnall$CHURNED,churn.result$cluster)
+barplot(table(churnall$CHURNED,churn.result$cluster),col=2:4)
+legend(0,600,c("Current","Invol","Vol"),col=2:4,pch=15)
+head(churnall[churn.result$cluster==3,])
+```
+
+### **[Part 3].Outlier Scan **
+```{r message=FALSE, warning=FALSE}
+boxplot.stats(churn[,3])$out
+outliers=which(churn[,3] %in% boxplot.stats(churn[,3])$out)
+outliers
+extremes=subset(churn,churn[,3]>sd(churn[,3]*5))
+extremes
+boxplot(churn[,3])
+```
+
